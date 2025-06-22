@@ -84,19 +84,23 @@ class HttpServer:
             return self.response(500, 'Internal Server Error', str(e).encode())
 
     def http_get(self, object_address, headers):
-        thedir = './server'
+        thedir = './'
         
         # Oprasi "LIST" untuk melihat daftar file
         if object_address == '/list_files':
             try:
                 files_in_dir = [f for f in os.listdir(thedir) if os.path.isfile(os.path.join(thedir, f))]
-                dir_list_html = "<h1>Daftar File di Server:</h1><ul>"
+                
+                # Ubah bagian ini untuk membuat respons teks biasa
+                dir_list_plain_text = "Daftar File di Server:\r\n" # Judul
                 for f in files_in_dir:
-                    dir_list_html += f"<li><a href='/{f}'>{f}</a></li>"
-                dir_list_html += "</ul>"
-                return self.response(200, 'OK', dir_list_html.encode('utf-8'), {'Content-type': 'text/html'})
+                    dir_list_plain_text += f"- {f}\r\n" # Setiap file di baris baru dengan bullet
+                
+                # Ubah Content-type menjadi 'text/plain'
+                return self.response(200, 'OK', dir_list_plain_text.encode('utf-8'), {'Content-type': 'text/plain'})
             except Exception as e:
                 return self.response(500, 'Internal Server Error', str(e).encode())
+
 
         if object_address == '/':
             return self.response(200, 'OK', b'Ini Adalah web Server percobaan', {})
@@ -130,7 +134,7 @@ class HttpServer:
 
 
     def http_post(self, object_address, headers, request_body): # Tambah request_body
-        thedir = './server'
+        thedir = './'
         object_address = object_address[1:] # Hapus '/' di awal
 
         if object_address == 'upload': # Contoh path untuk upload
@@ -150,7 +154,7 @@ class HttpServer:
             return self.response(405, 'Method Not Allowed', b'POST method only for /upload')
 
     def http_delete(self, object_address, headers): # Menambahkan method DELETE
-        thedir = './server'
+        thedir = './'
         object_address = object_address[1:] # Hapus '/' di awal
 
         filepath = os.path.join(thedir, object_address)
